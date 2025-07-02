@@ -1,217 +1,1602 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
+    "openapi": "3.0.1",
+    "info": {
+        "title": "OpenAPI definition (Filtered for APPROLE_Mila.PROVIDER)",
+        "version": "v0"
     },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+    "servers": [
+        {
+            "url": "http://localhost:8083/api",
+            "description": "Generated server url"
         }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
+    ],
+    "paths": {
+        "/v2/providers/{providerId}": {
+            "get": {
+                "tags": [
+                    "provider-controller"
+                ],
+                "operationId": "getProviderById",
+                "parameters": [
+                    {
+                        "name": "providerId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProviderResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "provider-controller"
+                ],
+                "operationId": "updateProvider",
+                "parameters": [
+                    {
+                        "name": "providerId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProviderRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateProviderResponse"
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          },
-          "required": true
         },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
+        "/v2/providers/{providerId}/deactivate": {
+            "put": {
+                "tags": [
+                    "provider-controller"
+                ],
+                "operationId": "deactivateProvider",
+                "parameters": [
+                    {
+                        "name": "providerId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateProviderResponse"
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
         },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
+        "/v2/providers/{providerId}/activate": {
+            "put": {
+                "tags": [
+                    "provider-controller"
+                ],
+                "operationId": "activateProvider",
+                "parameters": [
+                    {
+                        "name": "providerId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateProviderResponse"
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "message": {
-            "type": "string"
-          }
+        },
+        "/v2/organizations/{organizationId}": {
+			"get": {
+                "tags": [
+                    "organization-controller"
+                ],
+                "operationId": "getOrganizationById",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrganizationResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "organization-controller"
+                ],
+                "operationId": "updateOrganization",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateOrganizationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateOrganizationResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organization-groups/{organizationGroupId}": {
+            "get": {
+                "tags": [
+                    "organization-group-controller"
+                ],
+                "operationId": "getOrganizationGroupById",
+                "parameters": [
+                    {
+                        "name": "organizationGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OrganizationGroupResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "organization-group-controller"
+                ],
+                "operationId": "updateOrganizationGroup",
+                "parameters": [
+                    {
+                        "name": "organizationGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateOrganizationGroupRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateOrganizationGroupResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organization-groups/{organizationGroupId}/deactivate": {
+            "put": {
+                "tags": [
+                    "organization-group-controller"
+                ],
+                "operationId": "deactivateOrganizationGroup",
+                "parameters": [
+                    {
+                        "name": "organizationGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateOrganizationGroupResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organization-groups/{organizationGroupId}/activate": {
+            "put": {
+                "tags": [
+                    "organization-group-controller"
+                ],
+                "operationId": "activateOrganizationGroup",
+                "parameters": [
+                    {
+                        "name": "organizationGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateOrganizationGroupResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/providers": {
+            "post": {
+                "tags": [
+                    "provider-controller"
+                ],
+                "operationId": "createProvider",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateProviderRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateProviderResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organization-groups": {
+            "post": {
+                "tags": [
+                    "organization-group-controller"
+                ],
+                "operationId": "createOrganizationGroup",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateOrganizationGroupRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateOrganizationGroupResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organizations/{organizationId}/providers": {
+            "get": {
+                "tags": [
+                    "organization-controller"
+                ],
+                "operationId": "getProvidersByOrganization",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProviderResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organization-groups/{organizationGroupId}/providers": {
+            "get": {
+                "tags": [
+                    "organization-group-controller"
+                ],
+                "operationId": "getProvidersByOrganizationGroup",
+                "parameters": [
+                    {
+                        "name": "organizationGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProviderResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organization-groups/{organizationGroupId}/organizations": {
+            "get": {
+                "tags": [
+                    "organization-group-controller"
+                ],
+                "operationId": "getOrganizationsByOrganizationGroup",
+                "parameters": [
+                    {
+                        "name": "organizationGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrganizationResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/admin-groups/{adminGroupId}": {
+            "get": {
+                "tags": [
+                    "admin-group-controller"
+                ],
+                "operationId": "getAdminGroupById",
+                "parameters": [
+                    {
+                        "name": "adminGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminGroup"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/admin-groups/{adminGroupId}/organization-groups": {
+            "get": {
+                "tags": [
+                    "admin-group-controller"
+                ],
+                "operationId": "getOrganizationGroupsByAdminGroup",
+                "parameters": [
+                    {
+                        "name": "adminGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/OrganizationGroupResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/admin-groups/{adminGroupId}/admin-users": {
+            "get": {
+                "tags": [
+                    "admin-group-controller"
+                ],
+                "operationId": "getAdminUsersByAdminGroup",
+                "parameters": [
+                    {
+                        "name": "adminGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AdminUser"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/admin-groups/{adminGroupId}/twilio-sub-accounts": {
+            "post": {
+                "tags": [
+                    "admin-group-controller"
+                ],
+                "operationId": "addTwilioSubAccount",
+                "parameters": [
+                    {
+                        "name": "adminGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddTwilioSubAccountRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/v2/admin-groups/{adminGroupId}/twilio-sub-accounts/{twilioSubAccountId}": {
+			"put": {
+                "tags": [
+                    "admin-group-controller"
+                ],
+                "operationId": "updateTwilioSubAccount",
+                "parameters": [
+                    {
+                        "name": "adminGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "twilioSubAccountId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTwilioSubAccountRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "admin-group-controller"
+                ],
+                "operationId": "removeTwilioSubAccount",
+                "parameters": [
+                    {
+                        "name": "adminGroupId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "twilioSubAccountId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/v2/admin-users/{adminUserId}": {
+            "get": {
+                "tags": [
+                    "admin-user-controller"
+                ],
+                "operationId": "getAdminUserById",
+                "parameters": [
+                    {
+                        "name": "adminUserId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AdminUser"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organizations": {
+            "post": {
+                "tags": [
+                    "organization-controller"
+                ],
+                "operationId": "createOrganization",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateOrganizationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateOrganizationResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organizations/{organizationId}/deactivate": {
+            "put": {
+                "tags": [
+                    "organization-controller"
+                ],
+                "operationId": "deactivateOrganization",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateOrganizationResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/organizations/{organizationId}/activate": {
+            "put": {
+                "tags": [
+                    "organization-controller"
+                ],
+                "operationId": "activateOrganization",
+                "parameters": [
+                    {
+                        "name": "organizationId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateOrganizationResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
+    "components": {
+        "schemas": {
+            "UpdateProviderRequest": {
+                "required": [
+                    "emailId",
+                    "name",
+                    "organizationGroupId",
+                    "organizationId",
+                    "externalId"
+                ],
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "specialization": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "emailId": {
+                        "type": "string"
+                    },
+                    "entraId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    },
+                    "summary": {
+                        "type": "string"
+                    }
+                }
+            },
+            "UpdateProviderResponse": {
+                "type": "object",
+                "properties": {
+                    "providerId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "InboundVoiceAgentPhoneNumber": {
+                "type": "object",
+                "properties": {
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "twilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "outcomePlanType": {
+                        "type": "string",
+                        "enum": [
+                            "ANNUAL_WELLNESS_OUTREACH",
+                            "APPOINTMENT_CONFIRMATION",
+                            "KETAMINE_INFUSION",
+                            "COLONOSCOPY"
+                        ]
+                    },
+                    "outcomePlanId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "UpdateOrganizationRequest": {
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumberTwilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "inboundVoiceAgentPhoneNumbers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/InboundVoiceAgentPhoneNumber"
+                        }
+                    },
+                    "timezone": {
+                        "type": "string"
+                    },
+                    "greeting": {
+                        "type": "string"
+                    },
+                    "schedulingMessage": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    }
+                }
+            },
+            "UpdateOrganizationResponse": {
+                "type": "object",
+                "properties": {
+                    "organizationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "UpdateOrganizationGroupRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "assistantName": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumberTwilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "inboundVoiceAgentPhoneNumbers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/InboundVoiceAgentPhoneNumber"
+                        }
+                    },
+                    "enabledOutcomePlanTypes": {
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "ANNUAL_WELLNESS_OUTREACH",
+                                "APPOINTMENT_CONFIRMATION",
+                                "KETAMINE_INFUSION",
+                                "COLONOSCOPY"
+                            ]
+                        }
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    },
+                    "greeting": {
+                        "type": "string"
+                    },
+                    "schedulingMessage": {
+                        "type": "string"
+                    },
+                    "educationalIndex": {
+                        "type": "string"
+                    },
+                    "postEndPoint": {
+                        "type": "string"
+                    },
+                    "adminGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    }
+                }
+            },
+            "UpdateOrganizationGroupResponse": {
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "AdminGroup": {
+                "required": [
+                    "adminGroupId",
+                    "name",
+                    "phoneNumber",
+                    "state",
+                    "twilioSubAccountIds"
+                ],
+                "type": "object",
+                "properties": {
+                    "adminGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "twilioSubAccountIds": {
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                }
+            },
+            "AdminUser": {
+                "required": [
+                    "adminGroup",
+                    "adminUserId",
+                    "emailId",
+                    "name",
+                    "state"
+                ],
+                "type": "object",
+                "properties": {
+                    "adminUserId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "adminGroup": {
+                        "$ref": "#/components/schemas/AdminGroup"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "entraId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "emailId": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                }
+            },
+            "UpdateTwilioSubAccountRequest": {
+                "required": [
+                    "authToken"
+                ],
+                "type": "object",
+                "properties": {
+                    "authToken": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreateProviderRequest": {
+                "required": [
+                    "emailId",
+                    "name",
+                    "organizationGroupId",
+                    "organizationId",
+                    "externalId"
+                ],
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "specialization": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "emailId": {
+                        "type": "string"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    },
+                    "summary": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreateProviderResponse": {
+                "type": "object",
+                "properties": {
+                    "providerId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "specialization": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "emailId": {
+                        "type": "string"
+                    },
+                    "entraId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    },
+                    "organization": {
+                        "$ref": "#/components/schemas/OrganizationResponse"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    },
+                    "summary": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "emailId",
+                    "name",
+                    "organizationId",
+                    "externalId"
+                ]
+            },
+            "CreateOrganizationRequest": {
+                "required": [
+                    "organizationGroupId",
+                    "externalId"
+                ],
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumberTwilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "inboundVoiceAgentPhoneNumbers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/InboundVoiceAgentPhoneNumber"
+                        }
+                    },
+                    "timezone": {
+                        "type": "string"
+                    },
+                    "greeting": {
+                        "type": "string"
+                    },
+                    "schedulingMessage": {
+                        "type": "string"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    }
+                }
+            },
+            "CreateOrganizationResponse": {
+                "type": "object",
+                "properties": {
+                    "organizationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "CreateOrganizationGroupRequest": {
+                "required": [
+                    "adminGroupId",
+                    "externalId"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "assistantName": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumberTwilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "inboundVoiceAgentPhoneNumbers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/InboundVoiceAgentPhoneNumber"
+                        }
+                    },
+                    "enabledOutcomePlanTypes": {
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "ANNUAL_WELLNESS_OUTREACH",
+                                "APPOINTMENT_CONFIRMATION",
+                                "KETAMINE_INFUSION",
+                                "COLONOSCOPY"
+                            ]
+                        }
+                    },
+                    "greeting": {
+                        "type": "string"
+                    },
+                    "schedulingMessage": {
+                        "type": "string"
+                    },
+                    "educationalIndex": {
+                        "type": "string"
+                    },
+                    "postEndPoint": {
+                        "type": "string"
+                    },
+                    "adminGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    }
+                }
+            },
+            "CreateOrganizationGroupResponse": {
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "AddTwilioSubAccountRequest": {
+                "required": [
+                    "authToken",
+                    "twilioSubAccountId"
+                ],
+                "type": "object",
+                "properties": {
+                    "twilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "authToken": {
+                        "type": "string"
+                    }
+                }
+            },
+            "OrganizationGroupResponse": {
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "assistantName": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumberTwilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "inboundVoiceAgentPhoneNumbers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/InboundVoiceAgentPhoneNumber"
+                        }
+                    },
+                    "enabledOutcomePlanTypes": {
+                        "uniqueItems": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "ANNUAL_WELLNESS_OUTREACH",
+                                "APPOINTMENT_CONFIRMATION",
+                                "KETAMINE_INFUSION",
+                                "COLONOSCOPY"
+                            ]
+                        }
+                    },
+                    "greeting": {
+                        "type": "string"
+                    },
+                    "schedulingMessage": {
+                        "type": "string"
+                    },
+                    "educationalIndex": {
+                        "type": "string"
+                    },
+                    "postEndPoint": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    },
+                    "adminGroup": {
+                        "$ref": "#/components/schemas/AdminGroup"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    }
+                },
+                "required": [
+                    "adminGroup",
+                    "externalId",
+                    "name",
+                    "phoneNumber",
+                    "state"
+                ]
+            },
+            "OrganizationResponse": {
+                "type": "object",
+                "properties": {
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumber": {
+                        "type": "string"
+                    },
+                    "milaPhoneNumberTwilioSubAccountId": {
+                        "type": "string"
+                    },
+                    "inboundVoiceAgentPhoneNumbers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/InboundVoiceAgentPhoneNumber"
+                        }
+                    },
+                    "timezone": {
+                        "type": "string"
+                    },
+                    "greeting": {
+                        "type": "string"
+                    },
+                    "schedulingMessage": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    },
+                    "organizationGroup": {
+                        "$ref": "#/components/schemas/OrganizationGroupResponse"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    }
+                },
+                "required": [
+                    "externalId",
+                    "name",
+                    "organizationGroup",
+                    "organizationGroupId",
+                    "organizationId",
+                    "state"
+                ]
+            },
+            "ProviderResponse": {
+                "required": [
+                    "emailId",
+                    "name",
+                    "organizationId",
+                    "externalId"
+                ],
+                "type": "object",
+                "properties": {
+                    "providerId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "organizationGroupId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "organizationId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "specialization": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "phoneNumber": {
+                        "type": "string"
+                    },
+                    "emailId": {
+                        "type": "string"
+                    },
+                    "entraId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    },
+                    "organization": {
+                        "$ref": "#/components/schemas/OrganizationResponse"
+                    },
+                    "externalId": {
+                        "type": "string",
+                        "description": "Should map to a unique identifier in the external system. There can be only one entity in our system with this externalId."
+                    },
+                    "summary": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
     }
-  }
 }
